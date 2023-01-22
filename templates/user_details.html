@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class='row'>
+        <div class='col-4'>
+            {% if user.image_url %}
+                <img src='{{user.image_url}}' class='img-fluid'>
+            {% else %}
+                <img src='https://www.freeiconspng.com/uploads/icon-user-blue-symbol-people-person-generic--public-domain--21.png' class='img-fluid'>
+            {% endif %}
+        </div>
+        <div class='col'>
+            <h1>{{user.full_name}}</h1>
+            <form>
+                <button class='btn btn-primary'
+                    formaction='/users/{{user.id}}/edit'
+                    formmethod='GET'>Edit</button>
+                <button class='btn btn-danger'
+                    formaction='/users/{{user.id}}/delete'
+                    formmethod='POST'>Delete</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}
