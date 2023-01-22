@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h1>{{header}}</h1>
+    <form action="{{action}}" method="POST">
+        <div class="row my-1">
+            <label for="title" class="col-2">Title</label>
+            <input class="form-control col" id="title" name="title" type="text" value='{{post_title}}'>
+        </div>
+        <div class="row my-1">
+            <label for="Content" class="col-2">Content</label>
+            <textarea class="form-control col" id="content" name="content">{{post_content}}</textarea>
+        </div>
+        <button formaction='/users/{{user.id}}'
+        formmethod='GET' class="btn btn-outline-primary">Cancel</button>
+        <button type="submit" class="btn btn-success">{{button_text}}</button>
+    </form>
+{% endblock %}

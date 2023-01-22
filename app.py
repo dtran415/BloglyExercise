@@ -1,7 +1,7 @@
 """Blogly application."""
 
 from flask import Flask, redirect, render_template, request, flash
-from models import db, connect_db, User
+from models import db, connect_db, User, Post
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///blogly'
@@ -81,3 +81,76 @@ def delete_user(user_id):
     db.session.commit()
     
     return redirect('/users')
+
+@app.route('/users/<int:user_id>/posts/new')
+def create_post_page(user_id):
+    user = User.query.get_or_404(user_id)
+    header = f'Add Post for {user.full_name}'
+    action = f'/users/{user.id}/posts'
+    return render_template('post_add_or_edit.html', header=header, user=user, action=action, post_title='',
+                           post_content='', button_text='Add')
+
+@app.route('/users/<int:user_id>/posts', methods=['POST'])
+def create_post(user_id):
+    user = User.query.get_or_404(user_id)
+    
+    title = request.form.get('title')
+    if not title:
+        flash('Please input a title')
+        return redirect(f'/users/{user.id}/posts/new')
+    content = request.form.get('content')
+    if not content:
+        flash('Please input content for this post')
+        return redirect(f'/users/{user.id}/posts/new')
+    
+    new_post = Post(title=title, content=content, user_id=user.id)
+    db.session.add(new_post)
+    db.session.commit()
+    
+    return redirect(f'/users/{user.id}')
+
+@app.route('/users/<int:user_id>/posts/<int:post_id>')
+def show_post(user_id, post_id):
+    user = User.query.get_or_404(user_id)
+    post = Post.query.get_or_404(post_id)
+    
+    return render_template('post_details.html', user=user, post=post)
+
+@app.route('/users/<int:user_id>/posts/<int:post_id>/delete', methods=['POST'])
+def delete_post(user_id, post_id):
+    post = Post.query.get_or_404(post_id)
+    db.session.delete(post)
+    db.session.commit()
+    
+    return redirect(f'/users/{user_id}')
+
+@app.route('/users/<int:user_id>/posts/<int:post_id>/edit')
+def edit_post_page(user_id, post_id):
+    user = User.query.get_or_404(user_id)
+    post = Post.query.get_or_404(post_id)
+    
+    header = f'Edit Post'
+    action = f'/users/{user.id}/posts/{post.id}'
+    return render_template('post_add_or_edit.html', header=header, user=user, action=action, post_title=post.title,
+                           post_content=post.content, button_text='Edit')
+
+@app.route('/users/<int:user_id>/posts/<int:post_id>', methods=['POST'])
+def edit_post(user_id, post_id):
+    user = User.query.get_or_404(user_id)
+    
+    title = request.form.get('title')
+    if not title:
+        flash('Please input a title')
+        return redirect(f'/users/{user.id}/posts/{post_id}/edit')
+    content = request.form.get('content')
+    if not content:
+        flash('Please input content for this post')
+        return redirect(f'/users/{user.id}/posts/{post_id}/edit')
+    
+    post = Post.query.get_or_404(post_id)
+    post.title = title
+    post.content = content
+    db.session.add(post)
+    db.session.commit()
+    
+    return redirect(f'/users/{user.id}/posts/{post.id}')
