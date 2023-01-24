@@ -37,7 +37,22 @@ class Post(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     
     user = db.relationship('User')
+    tags = db.relationship('Tag', secondary='posts_tags')
     
     @property
     def friendly_date(self):
         return self.created_at.strftime("%b %-d  %Y, %-I:%M %p")
+
+class Tag(db.Model):
+    __tablename__ = "tags"
+    
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.Text, nullable=False, unique=True)
+    
+    posts = db.relationship('Post', secondary='posts_tags')
+    
+class PostTag(db.Model):
+    __tablename__ = "posts_tags"
+    
+    post_id = db.Column(db.Integer, db.ForeignKey("posts.id"), primary_key=True)
+    tag_id = db.Column(db.Integer, db.ForeignKey("tags.id"), primary_key=True)

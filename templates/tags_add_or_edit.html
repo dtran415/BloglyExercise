@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h1>{{header}}</h1>
+    <form action="{{action}}" method="POST">
+        <div class="row my-1">
+            <label for="name" class="col-2">Name</label>
+            <input class="form-control col" id="name" name="name" type="text" value='{{tag_name}}'>
+        </div>
+        <button formaction='/tags'
+        formmethod='GET' class="btn btn-outline-primary">Cancel</button>
+        <button type="submit" class="btn btn-success">{{button_text}}</button>
+    </form>
+{% endblock %}
